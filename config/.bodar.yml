@@ -1,0 +1,12 @@
+servers:
+  http:
+    default:
+      read_timeout_ms:        10
+      read_header_timeout_ms: 10
+      write_timeout_ms:       10
+      idle_timeout_ms:        10
+      max_header_bytes:       128
+
+strategies:
+  http:
+    http-empty-body:

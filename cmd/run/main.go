@@ -21,9 +21,11 @@ func main() {
 
 	r := &bodar.Registry{}
 
-	srv := http.NewDefaultServer(http.DefaultServerConfig{Port: 8081})
-	s := http.NewEmptyBodyStrategy(http.EmptyBodyStrategyConfig{Server: srv})
+	srv := http.NewDefaultServer(http.DefaultServerConfig{})
 
-	r.Register(s)
+	r.Use(http.EmptyBodyStrategyName, map[string]interface{}{
+		"port":   8081,
+		"server": srv,
+	})
 	log.Fatalf("error running registry: %v", r.Run())
 }

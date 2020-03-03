@@ -11,7 +11,7 @@ import (
 
 // Server is generic interface for an HTTP server.
 type Server interface {
-	Run(strat bodar.Strategy, hf http.HandlerFunc) error
+	Run(strategy bodar.Strategy, port int, handlerFunc http.HandlerFunc) error
 }
 
 // DefaultServer is a default implementation of an http.Server.
@@ -33,7 +33,6 @@ type DefaultServerConfig struct {
 func NewDefaultServer(cfg DefaultServerConfig) *DefaultServer {
 	return &DefaultServer{
 		srv: &http.Server{
-			Addr:              fmt.Sprintf(":%d", cfg.Port),
 			ReadTimeout:       cfg.ReadTimeout,
 			ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 			WriteTimeout:      cfg.WriteTimeout,
@@ -44,8 +43,13 @@ func NewDefaultServer(cfg DefaultServerConfig) *DefaultServer {
 }
 
 // Run starts the server and serves the given func.
-func (s *DefaultServer) Run(strat bodar.Strategy, hf http.HandlerFunc) error {
-	log.Infof(`serving strategy "%s" on "%s"`, strat.Name(), s.srv.Addr)
-	s.srv.Handler = hf
+func (s *DefaultServer) Run(strategy bodar.Strategy, port int, handlerFunc http.HandlerFunc) error {
+	log.Infof(`serving strategy "%s" on port %d`, strategy.Name(), port)
+	s.setAddr(port)
+	s.srv.Handler = handlerFunc
 	return s.srv.ListenAndServe()
+}
+
+func (s *DefaultServer) setAddr(port int) {
+	s.srv.Addr = fmt.Sprintf(":%d", port)
 }
