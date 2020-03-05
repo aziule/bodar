@@ -6,7 +6,7 @@ import (
 	"os"
 
 	applog "github.com/aziule/bodar/pkg/log"
-	"github.com/aziule/bodar/pkg/registry"
+	"github.com/aziule/bodar/pkg/run"
 	"github.com/aziule/bodar/pkg/strategy/http"
 	"github.com/sirupsen/logrus"
 )
@@ -22,7 +22,7 @@ func main() {
 
 	srv := http.NewDefaultServer(http.DefaultServerConfig{})
 
-	r := (&registry.Registry{}).WithDefaultStrategies()
+	r := (&run.Runner{}).WithDefaultStrategies()
 	r.Use(http.EmptyBodyStrategyName, map[string]interface{}{
 		"port":   8081,
 		"server": srv,

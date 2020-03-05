@@ -1,24 +1,22 @@
-package registry
+package run
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/aziule/bodar/pkg/strategy/http"
-
-	"github.com/aziule/bodar/pkg/strategy"
-
 	"github.com/aziule/bodar/pkg/log"
+	"github.com/aziule/bodar/pkg/strategy"
+	"github.com/aziule/bodar/pkg/strategy/http"
 )
 
-// Registry is a container centralising the strategies that will run.
-type Registry struct {
-	available map[string]strategy.StrategyFactoryFunc
+// Runner is responsible for running the provided strategies against a list of available strategies.
+type Runner struct {
+	available map[string]strategy.FactoryFunc
 	enabled   map[string]map[string]interface{}
 }
 
-func (r *Registry) WithDefaultStrategies() *Registry {
-	r.available = map[string]strategy.StrategyFactoryFunc{
+func (r *Runner) WithDefaultStrategies() *Runner {
+	r.available = map[string]strategy.FactoryFunc{
 		http.EmptyBodyStrategyName: http.NewEmptyBodyStrategy,
 		"2":                        http.NewEmptyBodyStrategy,
 		"3":                        http.NewEmptyBodyStrategy,
@@ -28,8 +26,8 @@ func (r *Registry) WithDefaultStrategies() *Registry {
 	return r
 }
 
-// Use defines what strategy we want to use with what config parameters.
-func (r *Registry) Use(strategy string, cfg map[string]interface{}) *Registry {
+// Use defines what strategy we want to use with specific config parameters.
+func (r *Runner) Use(strategy string, cfg map[string]interface{}) *Runner {
 	if r.enabled == nil {
 		r.enabled = make(map[string]map[string]interface{})
 	}
@@ -39,7 +37,7 @@ func (r *Registry) Use(strategy string, cfg map[string]interface{}) *Registry {
 }
 
 // Run tries to run the used strategies using the registered strategy factory funcs.
-func (r *Registry) Run(ctx context.Context) error {
+func (r *Runner) Run(ctx context.Context) error {
 	log.Info("starting registry with the following strategies:")
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -74,7 +72,7 @@ func (r *Registry) Run(ctx context.Context) error {
 	return nil
 }
 
-func (r *Registry) runStrategy(name string, cfg map[string]interface{}) error {
+func (r *Runner) runStrategy(name string, cfg map[string]interface{}) error {
 	foundFactoryFunc, ok := r.available[name]
 	if !ok {
 		return fmt.Errorf(`strategy "%s" not found`, name)

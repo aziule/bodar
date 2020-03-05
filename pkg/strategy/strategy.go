@@ -6,5 +6,5 @@ type Strategy interface {
 	Name() string
 }
 
-// StrategyFactoryFunc is a factory func used to create strategies given config parameters.
-type StrategyFactoryFunc func(cfg map[string]interface{}) (Strategy, error)
+// FactoryFunc is a factory func used to create strategies given config parameters.
+type FactoryFunc func(cfg map[string]interface{}) (Strategy, error)
