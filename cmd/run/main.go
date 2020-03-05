@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/aziule/bodar/pkg/behaviour/http"
 	applog "github.com/aziule/bodar/pkg/log"
 	"github.com/aziule/bodar/pkg/run"
-	"github.com/aziule/bodar/pkg/strategy/http"
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,13 +23,13 @@ func main() {
 	srv := http.NewDefaultServer(http.DefaultServerConfig{})
 
 	r := (&run.Runner{}).WithDefaultStrategies()
-	r.Use(http.EmptyBodyStrategyName, map[string]interface{}{
+	r.Use(http.EmptyBodyBehaviourName, map[string]interface{}{
 		"port":   8081,
 		"server": srv,
 	})
 
 	err = r.Run(context.Background())
 	if err != nil {
-		applog.Fatalf("error running registry: %v")
+		applog.Fatalf("error starting the runner: %v")
 	}
 }

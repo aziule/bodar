@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aziule/bodar/pkg/behaviour"
 	"github.com/aziule/bodar/pkg/log"
-	"github.com/aziule/bodar/pkg/strategy"
 )
 
 // Server is generic interface for an HTTP server.
 type Server interface {
-	Run(strategy strategy.Strategy, port int, handlerFunc http.HandlerFunc) error
+	Run(behaviour behaviour.Behaviour, port int, handlerFunc http.HandlerFunc) error
 }
 
 // DefaultServer is a default implementation of an http.Server.
@@ -43,8 +43,8 @@ func NewDefaultServer(cfg DefaultServerConfig) *DefaultServer {
 }
 
 // Run starts the server and serves the given func.
-func (s *DefaultServer) Run(strategy strategy.Strategy, port int, handlerFunc http.HandlerFunc) error {
-	log.Infof(`serving strategy "%s" on port %d`, strategy.Name(), port)
+func (s *DefaultServer) Run(behaviour behaviour.Behaviour, port int, handlerFunc http.HandlerFunc) error {
+	log.Infof(`serving behaviour "%s" on port %d`, behaviour.Name(), port)
 	s.setAddr(port)
 	s.srv.Handler = handlerFunc
 	return s.srv.ListenAndServe()
