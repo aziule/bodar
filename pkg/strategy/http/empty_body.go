@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/aziule/bodar/internal/app/bodar"
+	"github.com/aziule/bodar/pkg/strategy"
 )
 
-const (
-	EmptyBodyStrategyName        = "http-empty-body"
-	EmptyBodyStrategyDescription = "Return empty HTTP response body"
-)
+// EmptyBodyStrategyName name.
+const EmptyBodyStrategyName = "http-empty-body"
 
 // EmptyBodyStrategy is an HTTP-based strategy that always return empty bodies.
 type EmptyBodyStrategy struct {
@@ -23,11 +21,6 @@ func (s *EmptyBodyStrategy) Name() string {
 	return EmptyBodyStrategyName
 }
 
-// Description returns the strategy's description.
-func (s *EmptyBodyStrategy) Description() string {
-	return EmptyBodyStrategyDescription
-}
-
 // Run runs the HTTP server and serves the strategy.
 func (s *EmptyBodyStrategy) Run() error {
 	return s.server.Run(s, s.port, s.handleRequest)
@@ -38,13 +31,10 @@ func (s *EmptyBodyStrategy) handleRequest(w http.ResponseWriter, r *http.Request
 }
 
 // NewEmptyBodyStrategy creates a new EmptyBodyStrategy.
-func newEmptyBodyStrategy(cfg map[string]interface{}) (bodar.Strategy, error) {
-	return &EmptyBodyStrategy{
+func NewEmptyBodyStrategy(cfg map[string]interface{}) (strategy.Strategy, error) {
+	s := &EmptyBodyStrategy{
 		server: cfg["server"].(Server),
 		port:   cfg["port"].(int),
-	}, nil
-}
-
-func init() {
-	bodar.RegisterStrategyFactoryFunc(EmptyBodyStrategyName, newEmptyBodyStrategy)
+	}
+	return s, nil
 }
