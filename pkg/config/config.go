@@ -24,7 +24,7 @@ func Parse(data []byte) (*UserConfig, error) {
 	return &cfg, nil
 }
 
-// Config stores configuration values used to create behaviours.
+// BehaviourConfig stores configuration values used to create behaviours.
 type BehaviourConfig map[string]interface{}
 
 // Int returns the int representation of a value, if it exists.

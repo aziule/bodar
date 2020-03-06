@@ -12,7 +12,7 @@ import (
 // StatusCodeBehaviourName name.
 const StatusCodeBehaviourName = "http-status-code"
 
-// StatusCodeBehaviourName is an HTTP-based behaviour that returns specific status codes.
+// StatusCodeBehaviour is an HTTP-based behaviour that returns specific status codes.
 type StatusCodeBehaviour struct {
 	server     Server
 	port       int

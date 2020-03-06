@@ -8,6 +8,7 @@ import (
 	"github.com/aziule/bodar/pkg/config"
 )
 
+// Loader interface to load a user config.
 type Loader interface {
 	Load(cfg *config.UserConfig) error
 }
@@ -24,6 +25,7 @@ func NewLoader(runner *Runner) *ConfigLoader {
 	}
 }
 
+// Load behaviours given a user config.
 func (l *ConfigLoader) Load(cfg *config.UserConfig) error {
 	l.loadDefaultBehaviours()
 
@@ -36,61 +38,10 @@ func (l *ConfigLoader) Load(cfg *config.UserConfig) error {
 		l.runner.Use(bCfg.Name, bCfg.Params)
 	}
 
-	//httpServerCfgs := make(map[string]behaviour.Config)
-	//
-	//for name, serverConfig := range cfg.Servers.Http {
-	//	httpServerCfgs[name] = behaviour.Config{
-	//		"read_timeout":        serverConfig.ReadTimeout,
-	//		"read_header_timeout": serverConfig.ReadHeaderTimeout,
-	//		"write_timeout":       serverConfig.WriteTimeout,
-	//		"idle_timeout":        serverConfig.IdleTimeout,
-	//		"max_header_bytes":    serverConfig.MaxHeaderBytes,
-	//	}
-	//}
-	//
-	//for _, behaviourConfig := range cfg.Behaviours.Http {
-	//	serverCfg, ok := httpServerCfgs[behaviourConfig.Server]
-	//	if !ok {
-	//		return fmt.Errorf(`server "%s" not defined for behaviour "%s"`, behaviourConfig.Server, behaviourConfig.Type)
-	//	}
-	//
-	//	srv, err := http.NewDefaultServer(serverCfg)
-	//	if err != nil {
-	//		return fmt.Errorf(`could not create server for behaviour "%s": %v`, behaviourConfig.Type, err)
-	//	}
-	//
-	//	_, ok = l.runner.available[behaviourConfig.Type]
-	//	if !ok {
-	//		return fmt.Errorf(`behaviour type "%s" not found`, behaviourConfig.Type)
-	//	}
-	//
-	//	bCfg := behaviour.Config{
-	//		"server": srv,
-	//		"port":   behaviourConfig.Port,
-	//	}
-	//	for k, v := range behaviourConfig.Params {
-	//		bCfg[k] = v
-	//	}
-	//
-	//	l.runner.Use(behaviourConfig.Type, bCfg)
-	//	fmt.Println(l.runner)
-	//	//srv := http.NewDefaultServer(http.DefaultServerConfig{})
-	//	//
-	//	//r := (&run.Runner{}).WithDefaultStrategies()
-	//	//r.Use(http.EmptyBodyBehaviourName, map[string]interface{}{
-	//	//	"port":   8081,
-	//	//	"server": srv,
-	//	//})
-	//	//r.Use(http.StatusCodeBehaviourName, map[string]interface{}{
-	//	//	"port":        8082,
-	//	//	"server":      srv,
-	//	//	"status_code": 404,
-	//	//})
-	//}
-
 	return nil
 }
 
+// LoadCustomBehaviour makes a custom behaviour available to the runner.
 func (l *ConfigLoader) LoadCustomBehaviour(name string, factoryFunc behaviour.FactoryFunc) *ConfigLoader {
 	l.runner.available[name] = factoryFunc
 	return l
