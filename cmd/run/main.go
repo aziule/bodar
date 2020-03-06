@@ -27,6 +27,11 @@ func main() {
 		"port":   8081,
 		"server": srv,
 	})
+	r.Use(http.StatusCodeBehaviourName, map[string]interface{}{
+		"port":        8082,
+		"server":      srv,
+		"status_code": 404,
+	})
 
 	err = r.Run(context.Background())
 	if err != nil {

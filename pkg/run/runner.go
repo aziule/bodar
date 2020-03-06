@@ -17,7 +17,8 @@ type Runner struct {
 
 func (r *Runner) WithDefaultStrategies() *Runner {
 	r.available = map[string]behaviour.FactoryFunc{
-		http.EmptyBodyBehaviourName: http.NewEmptyBodyBehaviour,
+		http.EmptyBodyBehaviourName:  http.NewEmptyBodyBehaviour,
+		http.StatusCodeBehaviourName: http.NewStatusCodeBehaviour,
 	}
 	return r
 }
