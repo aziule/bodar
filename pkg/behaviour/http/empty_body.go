@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -27,14 +28,28 @@ func (s *EmptyBodyBehaviour) Run() error {
 }
 
 func (s *EmptyBodyBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("here")
 }
 
 // NewEmptyBodyBehaviour creates a new EmptyBodyBehaviour.
-func NewEmptyBodyBehaviour(cfg map[string]interface{}) (behaviour.Behaviour, error) {
-	s := &EmptyBodyBehaviour{
-		server: cfg["server"].(Server),
-		port:   cfg["port"].(int),
+func NewEmptyBodyBehaviour(cfg behaviour.Config) (behaviour.Behaviour, error) {
+	server, ok := cfg["server"]
+	if !ok {
+		return nil, errors.New("missing config")
 	}
-	return s, nil
+
+	srv, ok := server.(Server)
+	if !ok {
+		return nil, fmt.Errorf(`invalid type found for config "server": Server expected, %T found`, server)
+	}
+
+	port, err := cfg.Int("port")
+	if err != nil {
+		return nil, err
+	}
+
+	b := &EmptyBodyBehaviour{
+		server: srv,
+		port:   port,
+	}
+	return b, nil
 }

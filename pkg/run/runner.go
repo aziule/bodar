@@ -12,7 +12,7 @@ import (
 // Runner is responsible for running the provided behaviours against a list of available behaviours.
 type Runner struct {
 	available map[string]behaviour.FactoryFunc
-	enabled   map[string]map[string]interface{}
+	enabled   map[string]behaviour.Config
 }
 
 func (r *Runner) WithDefaultStrategies() *Runner {
@@ -23,12 +23,12 @@ func (r *Runner) WithDefaultStrategies() *Runner {
 }
 
 // Use defines what behaviour we want to use with specific config parameters.
-func (r *Runner) Use(behaviour string, cfg map[string]interface{}) *Runner {
+func (r *Runner) Use(name string, cfg map[string]interface{}) *Runner {
 	if r.enabled == nil {
-		r.enabled = make(map[string]map[string]interface{})
+		r.enabled = make(map[string]behaviour.Config)
 	}
-	log.Infof(`adding behaviour "%s" to the list of desired behaviours`, behaviour)
-	r.enabled[behaviour] = cfg
+	log.Infof(`adding behaviour "%s" to the list of desired behaviours`, name)
+	r.enabled[name] = cfg
 	return r
 }
 
@@ -68,7 +68,7 @@ func (r *Runner) Run(ctx context.Context) error {
 	return nil
 }
 
-func (r *Runner) runBehaviour(name string, cfg map[string]interface{}) error {
+func (r *Runner) runBehaviour(name string, cfg behaviour.Config) error {
 	foundFactoryFunc, ok := r.available[name]
 	if !ok {
 		return fmt.Errorf(`behaviour "%s" not found`, name)
