@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("could not parse config: %v", err)
 	}
 
-	runner := &run.Runner{}
+	runner := run.NewRunner()
 	loader := run.NewLoader(runner)
 	err = loader.Load(cfg)
 	if err != nil {

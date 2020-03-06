@@ -5,19 +5,28 @@ import (
 	"fmt"
 
 	"github.com/aziule/bodar/pkg/behaviour"
+	"github.com/aziule/bodar/pkg/config"
 	"github.com/aziule/bodar/pkg/log"
 )
 
 // Runner is responsible for running the provided behaviours against a list of available behaviours.
 type Runner struct {
 	available map[string]behaviour.FactoryFunc
-	enabled   map[string][]behaviour.Config
+	enabled   map[string][]config.BehaviourConfig
+}
+
+// NewRunner creates a new Runner and initialises its internals.
+func NewRunner() *Runner {
+	return &Runner{
+		available: make(map[string]behaviour.FactoryFunc),
+		enabled:   make(map[string][]config.BehaviourConfig),
+	}
 }
 
 // Use defines what behaviour we want to use with specific config parameters.
-func (r *Runner) Use(name string, cfg behaviour.Config) *Runner {
+func (r *Runner) Use(name string, cfg config.BehaviourConfig) *Runner {
 	if r.enabled == nil {
-		r.enabled = make(map[string][]behaviour.Config)
+		r.enabled = make(map[string][]config.BehaviourConfig)
 	}
 	log.Infof(`adding behaviour "%s" to the list of desired behaviours`, name)
 	r.enabled[name] = append(r.enabled[name], cfg)
@@ -62,7 +71,7 @@ func (r *Runner) Run(ctx context.Context) error {
 	return nil
 }
 
-func (r *Runner) runBehaviour(name string, cfg behaviour.Config) error {
+func (r *Runner) runBehaviour(name string, cfg config.BehaviourConfig) error {
 	foundFactoryFunc, ok := r.available[name]
 	if !ok {
 		return fmt.Errorf(`behaviour "%s" not found`, name)

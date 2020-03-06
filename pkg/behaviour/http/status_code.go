@@ -1,9 +1,10 @@
 package http
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/aziule/bodar/pkg/config"
 
 	"github.com/aziule/bodar/pkg/behaviour"
 )
@@ -34,15 +35,10 @@ func (s *StatusCodeBehaviour) handleRequest(w http.ResponseWriter, r *http.Reque
 }
 
 // NewStatusCodeBehaviour creates a new StatusCodeBehaviour.
-func NewStatusCodeBehaviour(cfg behaviour.Config) (behaviour.Behaviour, error) {
-	server, ok := cfg["server"]
-	if !ok {
-		return nil, errors.New("missing config")
-	}
-
-	srv, ok := server.(Server)
-	if !ok {
-		return nil, fmt.Errorf(`invalid type found for config "server": Server expected, %T found`, server)
+func NewStatusCodeBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
+	server, err := NewDefaultServer(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("could not create server: %v", err)
 	}
 
 	port, err := cfg.Int("port")
@@ -56,7 +52,7 @@ func NewStatusCodeBehaviour(cfg behaviour.Config) (behaviour.Behaviour, error) {
 	}
 
 	b := &StatusCodeBehaviour{
-		server:     srv,
+		server:     server,
 		port:       port,
 		statusCode: statusCode,
 	}

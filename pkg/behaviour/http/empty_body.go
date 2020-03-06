@@ -1,9 +1,10 @@
 package http
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/aziule/bodar/pkg/config"
 
 	"github.com/aziule/bodar/pkg/behaviour"
 )
@@ -28,19 +29,13 @@ func (s *EmptyBodyBehaviour) Run() error {
 }
 
 func (s *EmptyBodyBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("empty body")
 }
 
 // NewEmptyBodyBehaviour creates a new EmptyBodyBehaviour.
-func NewEmptyBodyBehaviour(cfg behaviour.Config) (behaviour.Behaviour, error) {
-	server, ok := cfg["server"]
-	if !ok {
-		return nil, errors.New("missing config")
-	}
-
-	srv, ok := server.(Server)
-	if !ok {
-		return nil, fmt.Errorf(`invalid type found for config "server": Server expected, %T found`, server)
+func NewEmptyBodyBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
+	server, err := NewDefaultServer(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("could not create server: %v", err)
 	}
 
 	port, err := cfg.Int("port")
@@ -49,7 +44,7 @@ func NewEmptyBodyBehaviour(cfg behaviour.Config) (behaviour.Behaviour, error) {
 	}
 
 	b := &EmptyBodyBehaviour{
-		server: srv,
+		server: server,
 		port:   port,
 	}
 	return b, nil

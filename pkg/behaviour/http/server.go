@@ -6,7 +6,16 @@ import (
 	"time"
 
 	"github.com/aziule/bodar/pkg/behaviour"
+	"github.com/aziule/bodar/pkg/config"
 	"github.com/aziule/bodar/pkg/log"
+)
+
+const (
+	defaultReadTimeout       = 10
+	defaultReadHeaderTimeout = 10
+	defaultWriteTimeout      = 10
+	defaultIdleTimeout       = 10
+	defaultMaxHeaderBytes    = 128
 )
 
 // Server is generic interface for an HTTP server.
@@ -20,38 +29,38 @@ type DefaultServer struct {
 }
 
 // NewDefaultServer creates a new DefaultServer.
-func NewDefaultServer(cfg behaviour.Config) (*DefaultServer, error) {
-	readTimeout, err := cfg.Int("read_timeout")
+func NewDefaultServer(cfg config.BehaviourConfig) (*DefaultServer, error) {
+	readTimeout, err := cfg.IntOrDefault("read_timeout", defaultReadTimeout)
 	if err != nil {
 		return nil, err
 	}
 
-	readHeaderTimeout, err := cfg.Int("read_header_timeout")
+	readHeaderTimeout, err := cfg.IntOrDefault("read_header_timeout", defaultReadHeaderTimeout)
 	if err != nil {
 		return nil, err
 	}
 
-	writeTimeout, err := cfg.Int("write_timeout")
+	writeTimeout, err := cfg.IntOrDefault("write_timeout", defaultWriteTimeout)
 	if err != nil {
 		return nil, err
 	}
 
-	idleTimeout, err := cfg.Int("idle_timeout")
+	idleTimeout, err := cfg.IntOrDefault("idle_timeout", defaultIdleTimeout)
 	if err != nil {
 		return nil, err
 	}
 
-	maxHeaderBytes, err := cfg.Int("max_header_bytes")
+	maxHeaderBytes, err := cfg.IntOrDefault("max_header_bytes", defaultMaxHeaderBytes)
 	if err != nil {
 		return nil, err
 	}
 
 	return &DefaultServer{
 		srv: &http.Server{
-			ReadTimeout:       time.Duration(readTimeout) * time.Millisecond,
-			ReadHeaderTimeout: time.Duration(readHeaderTimeout) * time.Millisecond,
-			WriteTimeout:      time.Duration(writeTimeout) * time.Millisecond,
-			IdleTimeout:       time.Duration(idleTimeout) * time.Millisecond,
+			ReadTimeout:       time.Duration(readTimeout) * time.Second,
+			ReadHeaderTimeout: time.Duration(readHeaderTimeout) * time.Second,
+			WriteTimeout:      time.Duration(writeTimeout) * time.Second,
+			IdleTimeout:       time.Duration(idleTimeout) * time.Second,
 			MaxHeaderBytes:    maxHeaderBytes,
 		},
 	}, nil
