@@ -23,7 +23,7 @@ func NewRunner() *Runner {
 	}
 }
 
-// Use defines what behaviour we want to use with specific config parameters.
+// Use a behaviour with specific config parameters.
 func (r *Runner) Use(name string, cfg config.BehaviourConfig) *Runner {
 	if r.enabled == nil {
 		r.enabled = make(map[string][]config.BehaviourConfig)
@@ -33,7 +33,7 @@ func (r *Runner) Use(name string, cfg config.BehaviourConfig) *Runner {
 	return r
 }
 
-// Run tries to run the used behaviours using the registered behaviour factory funcs.
+// Run the desired behaviours using the available behaviour factory funcs.
 func (r *Runner) Run(ctx context.Context) error {
 	log.Info("starting runner with the following behaviours:")
 

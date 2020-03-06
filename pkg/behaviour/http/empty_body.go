@@ -23,12 +23,13 @@ func (s *EmptyBodyBehaviour) Name() string {
 	return EmptyBodyBehaviourName
 }
 
-// Run runs the HTTP server and serves the behaviour.
+// Run the HTTP server and handle requests.
 func (s *EmptyBodyBehaviour) Run() error {
 	return s.server.Run(s, s.port, s.handleRequest)
 }
 
 func (s *EmptyBodyBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
+	// Do nothing
 }
 
 // NewEmptyBodyBehaviour creates a new EmptyBodyBehaviour.

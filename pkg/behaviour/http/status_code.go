@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/aziule/bodar/pkg/log"
+
 	"github.com/aziule/bodar/pkg/config"
 
 	"github.com/aziule/bodar/pkg/behaviour"
@@ -24,14 +26,14 @@ func (s *StatusCodeBehaviour) Name() string {
 	return StatusCodeBehaviourName
 }
 
-// Run runs the HTTP server and serves the behaviour.
+// Run the HTTP server and handle requests.
 func (s *StatusCodeBehaviour) Run() error {
 	return s.server.Run(s, s.port, s.handleRequest)
 }
 
 func (s *StatusCodeBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
+	log.Infof(`request received `)
 	w.WriteHeader(s.statusCode)
-	fmt.Println(s.statusCode)
 }
 
 // NewStatusCodeBehaviour creates a new StatusCodeBehaviour.

@@ -66,7 +66,7 @@ func NewDefaultServer(cfg config.BehaviourConfig) (*DefaultServer, error) {
 	}, nil
 }
 
-// Run starts the server and serves the given func.
+// Run the server and handle requests using the given handler.
 func (s *DefaultServer) Run(behaviour behaviour.Behaviour, port int, handlerFunc http.HandlerFunc) error {
 	log.Infof(`serving behaviour "%s" on port %d`, behaviour.Name(), port)
 	s.setAddr(port)
