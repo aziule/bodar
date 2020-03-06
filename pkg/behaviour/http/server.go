@@ -19,27 +19,42 @@ type DefaultServer struct {
 	srv *http.Server
 }
 
-// DefaultServerConfig is the config required to create a DefaultServer.
-type DefaultServerConfig struct {
-	Port              int
-	ReadTimeout       time.Duration
-	ReadHeaderTimeout time.Duration
-	WriteTimeout      time.Duration
-	IdleTimeout       time.Duration
-	MaxHeaderBytes    int
-}
-
 // NewDefaultServer creates a new DefaultServer.
-func NewDefaultServer(cfg DefaultServerConfig) *DefaultServer {
+func NewDefaultServer(cfg behaviour.Config) (*DefaultServer, error) {
+	readTimeout, err := cfg.Int("read_timeout")
+	if err != nil {
+		return nil, err
+	}
+
+	readHeaderTimeout, err := cfg.Int("read_header_timeout")
+	if err != nil {
+		return nil, err
+	}
+
+	writeTimeout, err := cfg.Int("write_timeout")
+	if err != nil {
+		return nil, err
+	}
+
+	idleTimeout, err := cfg.Int("idle_timeout")
+	if err != nil {
+		return nil, err
+	}
+
+	maxHeaderBytes, err := cfg.Int("max_header_bytes")
+	if err != nil {
+		return nil, err
+	}
+
 	return &DefaultServer{
 		srv: &http.Server{
-			ReadTimeout:       cfg.ReadTimeout,
-			ReadHeaderTimeout: cfg.ReadHeaderTimeout,
-			WriteTimeout:      cfg.WriteTimeout,
-			IdleTimeout:       cfg.IdleTimeout,
-			MaxHeaderBytes:    cfg.MaxHeaderBytes,
+			ReadTimeout:       time.Duration(readTimeout) * time.Millisecond,
+			ReadHeaderTimeout: time.Duration(readHeaderTimeout) * time.Millisecond,
+			WriteTimeout:      time.Duration(writeTimeout) * time.Millisecond,
+			IdleTimeout:       time.Duration(idleTimeout) * time.Millisecond,
+			MaxHeaderBytes:    maxHeaderBytes,
 		},
-	}
+	}, nil
 }
 
 // Run starts the server and serves the given func.

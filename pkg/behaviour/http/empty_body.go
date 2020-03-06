@@ -28,6 +28,7 @@ func (s *EmptyBodyBehaviour) Run() error {
 }
 
 func (s *EmptyBodyBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("empty body")
 }
 
 // NewEmptyBodyBehaviour creates a new EmptyBodyBehaviour.

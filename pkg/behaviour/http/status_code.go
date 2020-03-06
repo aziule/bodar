@@ -30,6 +30,7 @@ func (s *StatusCodeBehaviour) Run() error {
 
 func (s *StatusCodeBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(s.statusCode)
+	fmt.Println(s.statusCode)
 }
 
 // NewStatusCodeBehaviour creates a new StatusCodeBehaviour.

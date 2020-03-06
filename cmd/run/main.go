@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
+	"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/aziule/bodar/pkg/behaviour/http"
+	"github.com/aziule/bodar/pkg/config"
 	applog "github.com/aziule/bodar/pkg/log"
 	"github.com/aziule/bodar/pkg/run"
 	"github.com/sirupsen/logrus"
@@ -20,20 +21,23 @@ func main() {
 		log.Fatalf("could not setup logger: %v", err)
 	}
 
-	srv := http.NewDefaultServer(http.DefaultServerConfig{})
+	data, err := ioutil.ReadFile(".bodar.yml")
+	if err != nil {
+		log.Fatalf("could not read config: %v", err)
+	}
+	cfg, err := config.Parse(data)
+	if err != nil {
+		log.Fatalf("could not parse config: %v", err)
+	}
 
-	r := (&run.Runner{}).WithDefaultStrategies()
-	r.Use(http.EmptyBodyBehaviourName, map[string]interface{}{
-		"port":   8081,
-		"server": srv,
-	})
-	r.Use(http.StatusCodeBehaviourName, map[string]interface{}{
-		"port":        8082,
-		"server":      srv,
-		"status_code": 404,
-	})
+	runner := &run.Runner{}
+	loader := run.NewLoader(runner)
+	err = loader.Load(cfg)
+	if err != nil {
+		log.Fatalf("could not load config: %v", err)
+	}
 
-	err = r.Run(context.Background())
+	err = runner.Run(context.Background())
 	if err != nil {
 		applog.Fatalf("error starting the runner: %v")
 	}

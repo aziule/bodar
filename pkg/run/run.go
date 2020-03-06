@@ -5,31 +5,22 @@ import (
 	"fmt"
 
 	"github.com/aziule/bodar/pkg/behaviour"
-	"github.com/aziule/bodar/pkg/behaviour/http"
 	"github.com/aziule/bodar/pkg/log"
 )
 
 // Runner is responsible for running the provided behaviours against a list of available behaviours.
 type Runner struct {
 	available map[string]behaviour.FactoryFunc
-	enabled   map[string]behaviour.Config
-}
-
-func (r *Runner) WithDefaultStrategies() *Runner {
-	r.available = map[string]behaviour.FactoryFunc{
-		http.EmptyBodyBehaviourName:  http.NewEmptyBodyBehaviour,
-		http.StatusCodeBehaviourName: http.NewStatusCodeBehaviour,
-	}
-	return r
+	enabled   map[string][]behaviour.Config
 }
 
 // Use defines what behaviour we want to use with specific config parameters.
-func (r *Runner) Use(name string, cfg map[string]interface{}) *Runner {
+func (r *Runner) Use(name string, cfg behaviour.Config) *Runner {
 	if r.enabled == nil {
-		r.enabled = make(map[string]behaviour.Config)
+		r.enabled = make(map[string][]behaviour.Config)
 	}
 	log.Infof(`adding behaviour "%s" to the list of desired behaviours`, name)
-	r.enabled[name] = cfg
+	r.enabled[name] = append(r.enabled[name], cfg)
 	return r
 }
 
@@ -51,10 +42,12 @@ func (r *Runner) Run(ctx context.Context) error {
 	chErr := make(chan error)
 	defer close(chErr)
 
-	for name, cfg := range r.enabled {
-		go func(name string, cfg map[string]interface{}) {
-			chErr <- r.runBehaviour(name, cfg)
-		}(name, cfg)
+	for name, cfgs := range r.enabled {
+		for _, cfg := range cfgs {
+			go func(name string, cfg map[string]interface{}) {
+				chErr <- r.runBehaviour(name, cfg)
+			}(name, cfg)
+		}
 	}
 
 	select {

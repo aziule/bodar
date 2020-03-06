@@ -1,0 +1,24 @@
+servers:
+  http:
+    default:
+      read_timeout_ms:        1000
+      read_header_timeout_ms: 1000
+      write_timeout_ms:       1000
+      idle_timeout_ms:        1000
+      max_header_bytes:       128
+
+behaviours:
+  http:
+    - type: http-empty-body
+      server: default
+      port: 8081
+    - type: http-status-code
+      server: default
+      port: 8082
+      params:
+        status_code: 404
+    - type: http-status-code
+      server: default
+      port: 8083
+      params:
+        status_code: 500
