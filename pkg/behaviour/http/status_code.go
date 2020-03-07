@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/aziule/bodar/pkg/log"
-
 	"github.com/aziule/bodar/pkg/config"
 
 	"github.com/aziule/bodar/pkg/behaviour"
@@ -32,7 +30,6 @@ func (s *StatusCodeBehaviour) Run() error {
 }
 
 func (s *StatusCodeBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
-	log.Infof(`request received `)
 	w.WriteHeader(s.statusCode)
 }
 
