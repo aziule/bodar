@@ -1,10 +1,14 @@
 package http
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/aziule/bodar/pkg/log"
+	"github.com/google/uuid"
 )
+
+const requestID = "request_id"
 
 // Middleware func.
 type Middleware func(next http.HandlerFunc) http.HandlerFunc
@@ -27,7 +31,16 @@ func ChainMiddlewares(h http.HandlerFunc, middlewares ...Middleware) http.Handle
 // LogRequestMiddleware logs incoming requests.
 func LogRequestMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Infof("new request")
+		log.Infof("http request %s received from %s %s %s", r.Context().Value(requestID), r.RemoteAddr, r.Method, r.URL)
+		next.ServeHTTP(w, r)
+	}
+}
+
+// LogRequestMiddleware assigns an ID to a request.
+func RequestIDMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), requestID, uuid.New().String())
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	}
 }

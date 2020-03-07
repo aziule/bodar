@@ -70,7 +70,7 @@ func NewDefaultServer(cfg config.BehaviourConfig) (*DefaultServer, error) {
 func (s *DefaultServer) Run(behaviour behaviour.Behaviour, port int, handlerFunc http.HandlerFunc) error {
 	log.Infof(`serving behaviour "%s" on port %d`, behaviour.Name(), port)
 	s.setAddr(port)
-	s.srv.Handler = ChainMiddlewares(handlerFunc, LogRequestMiddleware)
+	s.srv.Handler = ChainMiddlewares(handlerFunc, RequestIDMiddleware, LogRequestMiddleware)
 	return s.srv.ListenAndServe()
 }
 
