@@ -48,7 +48,6 @@ func (l *ConfigLoader) LoadCustomBehaviour(name string, factoryFunc behaviour.Fa
 }
 
 func (l *ConfigLoader) loadDefaultBehaviours() *ConfigLoader {
-	l.runner.available[http.EmptyBodyBehaviourName] = http.NewEmptyBodyBehaviour
-	l.runner.available[http.StatusCodeBehaviourName] = http.NewStatusCodeBehaviour
+	l.runner.available[http.SimpleResponseBehaviourName] = http.NewSimpleResponseBehaviour
 	return l
 }

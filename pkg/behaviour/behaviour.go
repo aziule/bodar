@@ -6,6 +6,7 @@ import "github.com/aziule/bodar/pkg/config"
 type Behaviour interface {
 	Run() error
 	Name() string
+	Description() string
 }
 
 // FactoryFunc is a factory func used to create behaviours given config parameters.

@@ -82,7 +82,7 @@ func (r *Runner) runBehaviour(name string, cfg config.BehaviourConfig) error {
 		return fmt.Errorf(`error creating behaviour "%s": %v`, name, err)
 	}
 
-	log.Infof(`running behaviour "%s"`, name)
+	log.Infof(`running behaviour "%s" %s`, name, behaviour.Description())
 	err = behaviour.Run()
 	if err != nil {
 		return fmt.Errorf(`error running behaviour "%s": %v`, name, err)
