@@ -36,7 +36,7 @@ func LogRequestMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// LogRequestMiddleware assigns an ID to a request.
+// RequestIDMiddleware assigns an ID to a request.
 func RequestIDMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), requestID, uuid.New().String())

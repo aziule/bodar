@@ -3,14 +3,22 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/aziule/bodar/pkg/behaviour"
 	"github.com/aziule/bodar/pkg/config"
 	"github.com/aziule/bodar/pkg/log"
 )
 
-// SimpleResponseBehaviourName name.
-const SimpleResponseBehaviourName = "http-simple-response"
+const (
+	// SimpleResponseBehaviourName name.
+	SimpleResponseBehaviourName = "http-simple-response"
+
+	defaultStatusCode  = http.StatusOK
+	defaultBody        = ""
+	defaultContentType = ""
+	defaultDelay       = 0
+)
 
 // SimpleResponseBehaviour is an HTTP-based behaviour that can return responses and a status code.
 type SimpleResponseBehaviour struct {
@@ -20,6 +28,7 @@ type SimpleResponseBehaviour struct {
 	statusCode  int
 	contentType string
 	body        []byte
+	delay       time.Duration
 }
 
 // Name returns the behaviour's name.
@@ -34,10 +43,13 @@ func (s *SimpleResponseBehaviour) Description() string {
 
 // Run the HTTP server and handle requests.
 func (s *SimpleResponseBehaviour) Run() error {
-	return s.server.Run(s, s.port, s.handleRequest)
+	log.Infof(`serving "%s" behaviour "%s" on port %d`, s.Name(), s.description, s.port)
+	return s.server.Run(s.port, s.handleRequest)
 }
 
 func (s *SimpleResponseBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(s.delay)
+
 	if s.contentType != "" {
 		w.Header().Set("Content-Type", s.contentType)
 	}
@@ -56,7 +68,7 @@ func NewSimpleResponseBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour
 		return nil, fmt.Errorf("could not create server: %v", err)
 	}
 
-	description, err := cfg.StringOrDefault("description", "")
+	description, err := cfg.String("description")
 	if err != nil {
 		return nil, err
 	}
@@ -66,17 +78,22 @@ func NewSimpleResponseBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour
 		return nil, err
 	}
 
-	statusCode, err := cfg.IntOrDefault("status_code", http.StatusOK)
+	statusCode, err := cfg.IntOrDefault("status_code", defaultStatusCode)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := cfg.StringOrDefault("body", "")
+	body, err := cfg.StringOrDefault("body", defaultBody)
 	if err != nil {
 		return nil, err
 	}
 
-	contentType, err := cfg.StringOrDefault("content_type", "")
+	contentType, err := cfg.StringOrDefault("content_type", defaultContentType)
+	if err != nil {
+		return nil, err
+	}
+
+	delay, err := cfg.IntOrDefault("delay", defaultDelay)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +105,7 @@ func NewSimpleResponseBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour
 		statusCode:  statusCode,
 		contentType: contentType,
 		body:        []byte(body),
+		delay:       time.Duration(delay) * time.Second,
 	}
 	return b, nil
 }

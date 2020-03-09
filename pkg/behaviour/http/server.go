@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aziule/bodar/pkg/behaviour"
 	"github.com/aziule/bodar/pkg/config"
-	"github.com/aziule/bodar/pkg/log"
 )
 
 const (
@@ -15,12 +13,12 @@ const (
 	defaultReadHeaderTimeout = 10
 	defaultWriteTimeout      = 10
 	defaultIdleTimeout       = 10
-	defaultMaxHeaderBytes    = 128
+	defaultMaxHeaderBytes    = http.DefaultMaxHeaderBytes
 )
 
 // Server is generic interface for an HTTP server.
 type Server interface {
-	Run(behaviour behaviour.Behaviour, port int, handlerFunc http.HandlerFunc) error
+	Run(port int, handlerFunc http.HandlerFunc) error
 }
 
 // DefaultServer is a default implementation of an http.Server.
@@ -67,8 +65,7 @@ func NewDefaultServer(cfg config.BehaviourConfig) (*DefaultServer, error) {
 }
 
 // Run the server and handle requests using the given handler.
-func (s *DefaultServer) Run(behaviour behaviour.Behaviour, port int, handlerFunc http.HandlerFunc) error {
-	log.Infof(`serving behaviour "%s" on port %d`, behaviour.Name(), port)
+func (s *DefaultServer) Run(port int, handlerFunc http.HandlerFunc) error {
 	s.setAddr(port)
 	s.srv.Handler = ChainMiddlewares(handlerFunc, RequestIDMiddleware, LogRequestMiddleware)
 	return s.srv.ListenAndServe()

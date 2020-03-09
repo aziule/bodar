@@ -3,15 +3,23 @@ behaviours:
     description: Empty response body
     port: 8081
   - name: http-simple-response
-    description: Not Found error
+    description: 404 Not Found error
     port: 8082
     status_code: 404
   - name: http-simple-response
-    description: Server Error
+    description: 500 Internal Server Error
     port: 8083
     status_code: 500
   - name: http-simple-response
     description: Wrong content type returned
     port: 8084
     content_type: "application/json; charset: utf-8"
-    body: foo
+    body: "foo"
+  - name: http-simple-response
+    description: Response is too long
+    port: 8085
+    delay: 60
+  - name: http-simple-response
+    description: Send MBs of data
+    port: 8086
+    body_size: 50000000
