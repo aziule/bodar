@@ -9,10 +9,8 @@ import (
 	"github.com/aziule/bodar/pkg/log"
 )
 
-const (
-	// Behaviour name.
-	BehaviourName = "websocket-default"
-)
+// BehaviourName name.
+const BehaviourName = "websocket-default"
 
 // Behaviour is a websocket-based behaviour.
 type Behaviour struct {
@@ -21,6 +19,7 @@ type Behaviour struct {
 	port   int
 }
 
+// Run runs the HTTP server and serves the websocket behaviour.
 func (s *Behaviour) Run() error {
 	log.Infof(`serving "%s" behaviour "%s" on port %d`, s.Name(), s.Description(), s.port)
 	return s.server.Run(s.port, s.handleRequest)

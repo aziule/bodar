@@ -43,7 +43,12 @@ func (s *DefaultServer) Run(port int, handlerFunc http.HandlerFunc) error {
 			log.Errorf("could not upgrade http connection: %v", err)
 			return
 		}
-		defer c.Close()
+		defer func() {
+			err := c.Close()
+			if err != nil {
+				log.Errorf("error closing the websocket connection: %v", err)
+			}
+		}()
 
 		for {
 			mt, message, err := c.ReadMessage()

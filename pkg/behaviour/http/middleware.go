@@ -8,7 +8,9 @@ import (
 	"github.com/google/uuid"
 )
 
-const requestID = "request_id"
+type contextKey string
+
+const requestID contextKey = "request_id"
 
 // Middleware func.
 type Middleware func(next http.HandlerFunc) http.HandlerFunc
