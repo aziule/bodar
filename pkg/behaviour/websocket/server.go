@@ -14,15 +14,17 @@ type Server interface {
 	Run(port int, handlerFunc http.HandlerFunc) error
 }
 
+// DefaultServer is a default implementation of a websocket server.
 type DefaultServer struct {
 	srv      apphttp.Server
 	upgrader websocket.Upgrader
 }
 
-func NewDefaultServer(cfg config.BehaviourConfig) *DefaultServer {
+// NewDefaultServer creates a DefaultServer.
+func NewDefaultServer(cfg config.BehaviourConfig) (*DefaultServer, error) {
 	srv, err := apphttp.NewDefaultServer(cfg)
 	if err != nil {
-		panic(err) // TODO: handle
+		return nil, err
 	}
 
 	var upgrader websocket.Upgrader
@@ -30,9 +32,10 @@ func NewDefaultServer(cfg config.BehaviourConfig) *DefaultServer {
 	return &DefaultServer{
 		srv:      srv,
 		upgrader: upgrader,
-	}
+	}, nil
 }
 
+// Run the server and handle requests using the given handler.
 func (s *DefaultServer) Run(port int, handlerFunc http.HandlerFunc) error {
 	return s.srv.Run(port, func(w http.ResponseWriter, r *http.Request) {
 		c, err := s.upgrader.Upgrade(w, r, nil)
@@ -55,5 +58,6 @@ func (s *DefaultServer) Run(port int, handlerFunc http.HandlerFunc) error {
 				break
 			}
 		}
+		handlerFunc(w, r)
 	})
 }

@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	// SimpleResponseBehaviourName name.
-	SimpleResponseBehaviourName = "http-simple-response"
+	// BehaviourName name.
+	BehaviourName = "http-behaviour"
 
 	defaultStatusCode  = http.StatusOK
 	defaultBody        = ""
@@ -20,8 +20,8 @@ const (
 	defaultDelay       = 0
 )
 
-// SimpleResponseBehaviour is an HTTP-based behaviour that can return responses and a status code.
-type SimpleResponseBehaviour struct {
+// Behaviour is an HTTP-based behaviour.
+type Behaviour struct {
 	description string
 	server      Server
 	port        int
@@ -32,22 +32,22 @@ type SimpleResponseBehaviour struct {
 }
 
 // Name returns the behaviour's name.
-func (s *SimpleResponseBehaviour) Name() string {
-	return SimpleResponseBehaviourName
+func (s *Behaviour) Name() string {
+	return BehaviourName
 }
 
 // Description returns the behaviour's description.
-func (s *SimpleResponseBehaviour) Description() string {
+func (s *Behaviour) Description() string {
 	return s.description
 }
 
 // Run the HTTP server and handle requests.
-func (s *SimpleResponseBehaviour) Run() error {
+func (s *Behaviour) Run() error {
 	log.Infof(`serving "%s" behaviour "%s" on port %d`, s.Name(), s.description, s.port)
 	return s.server.Run(s.port, s.handleRequest)
 }
 
-func (s *SimpleResponseBehaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
+func (s *Behaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(s.delay)
 
 	if s.contentType != "" {
@@ -61,8 +61,8 @@ func (s *SimpleResponseBehaviour) handleRequest(w http.ResponseWriter, r *http.R
 	}
 }
 
-// NewSimpleResponseBehaviour creates a new SimpleResponseBehaviour.
-func NewSimpleResponseBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
+// NewBehaviour creates a new Behaviour.
+func NewBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
 	server, err := NewDefaultServer(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("could not create server: %v", err)
@@ -98,7 +98,7 @@ func NewSimpleResponseBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour
 		return nil, err
 	}
 
-	b := &SimpleResponseBehaviour{
+	b := &Behaviour{
 		description: description,
 		server:      server,
 		port:        port,

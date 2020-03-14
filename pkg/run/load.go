@@ -3,6 +3,8 @@ package run
 import (
 	"fmt"
 
+	"github.com/aziule/bodar/pkg/behaviour/websocket"
+
 	"github.com/aziule/bodar/pkg/behaviour"
 	"github.com/aziule/bodar/pkg/behaviour/http"
 	"github.com/aziule/bodar/pkg/config"
@@ -48,6 +50,7 @@ func (l *ConfigLoader) LoadCustomBehaviour(name string, factoryFunc behaviour.Fa
 }
 
 func (l *ConfigLoader) loadDefaultBehaviours() *ConfigLoader {
-	l.runner.available[http.SimpleResponseBehaviourName] = http.NewSimpleResponseBehaviour
+	l.runner.available[http.BehaviourName] = http.NewBehaviour
+	l.runner.available[websocket.BehaviourName] = websocket.NewBehaviour
 	return l
 }
