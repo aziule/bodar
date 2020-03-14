@@ -3,10 +3,9 @@ package run
 import (
 	"fmt"
 
-	"github.com/aziule/bodar/pkg/behaviour/websocket"
-
 	"github.com/aziule/bodar/pkg/behaviour"
 	"github.com/aziule/bodar/pkg/behaviour/http"
+	"github.com/aziule/bodar/pkg/behaviour/http/websocket"
 	"github.com/aziule/bodar/pkg/config"
 )
 
