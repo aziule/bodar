@@ -12,7 +12,7 @@ import (
 
 const (
 	// BehaviourName name.
-	BehaviourName = "http-behaviour"
+	BehaviourName = "http-default"
 
 	defaultStatusCode  = http.StatusOK
 	defaultBody        = ""
@@ -22,7 +22,7 @@ const (
 
 // Behaviour is an HTTP-based behaviour.
 type Behaviour struct {
-	description string
+	*behaviour.Base
 	server      Server
 	port        int
 	statusCode  int
@@ -31,19 +31,9 @@ type Behaviour struct {
 	delay       time.Duration
 }
 
-// Name returns the behaviour's name.
-func (s *Behaviour) Name() string {
-	return BehaviourName
-}
-
-// Description returns the behaviour's description.
-func (s *Behaviour) Description() string {
-	return s.description
-}
-
 // Run the HTTP server and handle requests.
 func (s *Behaviour) Run() error {
-	log.Infof(`serving "%s" behaviour "%s" on port %d`, s.Name(), s.description, s.port)
+	log.Infof(`serving "%s" behaviour "%s" on port %d`, s.Name(), s.Description(), s.port)
 	return s.server.Run(s.port, s.handleRequest)
 }
 
@@ -63,14 +53,14 @@ func (s *Behaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
 
 // NewBehaviour creates a new Behaviour.
 func NewBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
+	base, err := behaviour.NewBase(BehaviourName, cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	server, err := NewDefaultServer(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("could not create server: %v", err)
-	}
-
-	description, err := cfg.String("description")
-	if err != nil {
-		return nil, err
 	}
 
 	port, err := cfg.Int("port")
@@ -99,7 +89,7 @@ func NewBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
 	}
 
 	b := &Behaviour{
-		description: description,
+		Base:        base,
 		server:      server,
 		port:        port,
 		statusCode:  statusCode,

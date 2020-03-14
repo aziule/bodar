@@ -1,29 +1,35 @@
 behaviours:
-  - name: http-behaviour
+  - name: http-default
+    id: http_empty_response
     description: Empty response body
     port: 8081
-  - name: http-behaviour
+  - name: http-default
+    id: http_404
     description: 404 Not Found error
     port: 8082
     status_code: 404
-  - name: http-behaviour
+  - name: http-default
+    id: http_500
     description: 500 Internal Server Error
     port: 8083
     status_code: 500
-  - name: http-behaviour
+  - name: http-default
+    id: http_malformed_json
     description: Wrong content type returned
     port: 8084
     content_type: "application/json; charset: utf-8"
     body: "foo"
-  - name: http-behaviour
+  - name: http-default
+    id: http_long_response
     description: Response is too long
     port: 8085
     delay: 60
 # TODO
-#  - name: http-behaviour
+#  - name: http-default
 #    description: Send MBs of data
 #    port: 8086
 #    body_size: 50000000
-  - name: websocket-behaviour
+  - name: websocket-default
+    id: websocket_foo
     description: Test
     port: 8087
