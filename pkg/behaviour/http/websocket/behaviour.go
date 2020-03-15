@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/aziule/bodar/pkg/behaviour"
+	apphttp "github.com/aziule/bodar/pkg/behaviour/http"
 	"github.com/aziule/bodar/pkg/config"
 	"github.com/aziule/bodar/pkg/log"
+	"github.com/gorilla/websocket"
 )
 
 // BehaviourName name.
@@ -15,7 +17,7 @@ const BehaviourName = "websocket-default"
 // Behaviour is a websocket-based behaviour.
 type Behaviour struct {
 	*behaviour.Base
-	server Server
+	server apphttp.Server
 	port   int
 }
 
@@ -26,7 +28,33 @@ func (s *Behaviour) Run() error {
 }
 
 func (s *Behaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
-	log.Infof("websocket request")
+	var upgrader websocket.Upgrader
+
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Errorf("could not upgrade http connection: %v", err)
+		return
+	}
+	defer func() {
+		err := c.Close()
+		if err != nil {
+			log.Errorf("error closing the websocket connection: %v", err)
+		}
+	}()
+
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Errorf("read err: %v", err)
+			break
+		}
+		log.Infof("received: %v", message)
+		err = c.WriteMessage(mt, message)
+		if err != nil {
+			log.Infof("written: %v", message)
+			break
+		}
+	}
 }
 
 // NewBehaviour creates a new Behaviour.
@@ -36,7 +64,7 @@ func NewBehaviour(cfg config.BehaviourConfig) (behaviour.Behaviour, error) {
 		return nil, err
 	}
 
-	server, err := NewDefaultServer(cfg)
+	server, err := apphttp.NewDefaultServer(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("could not create server: %v", err)
 	}

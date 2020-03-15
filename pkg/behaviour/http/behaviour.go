@@ -38,7 +38,9 @@ func (s *Behaviour) Run() error {
 }
 
 func (s *Behaviour) handleRequest(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(s.delay)
+	if s.delay != 0 {
+		time.Sleep(s.delay)
+	}
 
 	if s.contentType != "" {
 		w.Header().Set("Content-Type", s.contentType)

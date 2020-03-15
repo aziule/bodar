@@ -19,6 +19,7 @@ const (
 // Server is generic interface for an HTTP server.
 type Server interface {
 	Run(port int, handlerFunc http.HandlerFunc) error
+	Stop() error
 }
 
 // DefaultServer is a default implementation of an http.Server.
@@ -69,6 +70,11 @@ func (s *DefaultServer) Run(port int, handlerFunc http.HandlerFunc) error {
 	s.setAddr(port)
 	s.srv.Handler = ChainMiddlewares(handlerFunc, RequestIDMiddleware, LogRequestMiddleware)
 	return s.srv.ListenAndServe()
+}
+
+// Stop gracefully shuts down the server.
+func (s *DefaultServer) Stop() error {
+	return s.srv.Close()
 }
 
 func (s *DefaultServer) setAddr(port int) {
